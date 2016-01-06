@@ -25,7 +25,7 @@ shopt -s checkwinsize
 
 # If set, the pattern "**" used in a pathname expansion context will
 # match all files and zero or more directories and subdirectories.
-#shopt -s globstar
+shopt -s globstar
 
 # make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
@@ -93,6 +93,26 @@ alias la='ls -A'
 alias l='ls -CF'
 
 alias anaconda='/opt/anaconda3/bin/launcher'
+alias jflap7="/opt/jflap/JFLAP7.jar"
+alias jflap8="/opt/jflap/JFLAP8_beta.jar"
+alias sshion="ssh -Y bsm9339@ion.rc.rit.edu;echo yes"
+alias sshansible="ssh -i ~/.ssh/id_kgcoe root@kgcoe-ansible.rit.edu"
+
+alias rawpy2.7="~/pyenvs/python2.7/bin/python2.7"
+alias rawpy3.5="~/pyenvs/python3.5/bin/python3.5"
+alias devsplat="~/Code/SPLAT/splat"
+alias devsplat2="~/Code/SPLAT/splat2.py"
+alias python3.4="/usr/bin/python3.4"
+alias python2.7="/usr/bin/python2.7"
+alias search="ls -R ${PWD} | grep"
+
+loop() { for i in $(seq $1); do $2; done }
+
+clean(){
+	sudo apt-get update
+	sudo apt-get upgrade
+	sudo apt-get autoremove
+}
 
 cd() { builtin cd "$@" && ls; }
 
@@ -123,17 +143,14 @@ fi
 # added by Anaconda3 2.3.0 installer
 export PATH="/opt/anaconda3/bin:$PATH"
 
-red="\033[1;31m";
+#red="\033[1;31m";
 green="\e[1;32m";
 norm="\033[0;39m";
 cyan="\033[1;36m";
 white="\e[1;37m";
 if [ "$PS1" ]; then
-    if [[ $UID -eq 0 ]]; then
-      PS1="\[$red\]\u@\h:\w\\[\033[0;39m\]# "
-    else
-      PS1="\[$green\]\u\[$white\]@\h:\w\\[\033[0;39m\]\$ "
-    fi
-    export PROMPT_COMMAND="echo -n \[\$(date +%H:%M:%S)\]\ "
-    #export PS1=" "$PS1"\[\e]30;\u@\h\a\]"
+#  PS1="\[$green\]\u\[$white\]@\[$cyan\]\h:\[$norm\]\w\$ "
+   PS1="\t \[$green\]\u\[$white\]@\[$cyan\]\H:\[$norm\]\w \\$\[$(tput sgr0)\] "
+   #export PROMPT_COMMAND="echo -n \[\$(date +%H:%M:%S)\]\ "
+   #export PS1=" "$PS1"\[\e]30;\u@\h\a\]"
 fi
