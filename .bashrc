@@ -25,13 +25,14 @@ shopt -s checkwinsize
 
 # If set, the pattern "**" used in a pathname expansion context will
 # match all files and zero or more directories and subdirectories.
-shopt -s globstar
+#shopt -s globstar
 
 # make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
 # set variable identifying the chroot you work in (used in the prompt below)
 if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
+
     debian_chroot=$(cat /etc/debian_chroot)
 fi
 
@@ -43,7 +44,7 @@ esac
 # uncomment for a colored prompt, if the terminal has the capability; turned
 # off by default to not distract the user: the focus in a terminal window
 # should be on the output of commands, not on the prompt
-#force_color_prompt=yes
+force_color_prompt=yes
 
 if [ -n "$force_color_prompt" ]; then
     if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
@@ -84,37 +85,38 @@ if [ -x /usr/bin/dircolors ]; then
     alias egrep='egrep --color=auto'
 fi
 
-# colored GCC warnings and errors
-#export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
-
 # some more ls aliases
 alias ll='ls -alF'
 alias la='ls -A'
 alias l='ls -CF'
 
-alias anaconda='/opt/anaconda3/bin/launcher'
-alias jflap7="/opt/jflap/JFLAP7.jar"
-alias jflap8="/opt/jflap/JFLAP8_beta.jar"
-alias sshion="ssh -Y bsm9339@ion.rc.rit.edu;echo yes"
-alias sshansible="ssh -i ~/.ssh/id_kgcoe root@kgcoe-ansible.rit.edu"
-
-alias rawpy2.7="~/pyenvs/python2.7/bin/python2.7"
-alias rawpy3.5="~/pyenvs/python3.5/bin/python3.5"
-alias devsplat="~/Code/SPLAT/splat"
-alias devsplat2="~/Code/SPLAT/splat2.py"
-alias python3.4="/usr/bin/python3.4"
-alias python2.7="/usr/bin/python2.7"
+alias devsplat="~/Code/SPLAT/splat/splat"
 alias search="ls -R ${PWD} | grep"
+alias myip="hostname -I"
+eval "$(thefuck --alias fuck)"
+
+fileToClipboard() {
+	cat $1 | xclip -selection clipboard
+}
+
+cd() { builtin cd "$@" && ls; }
 
 loop() { for i in $(seq $1); do $2; done }
 
 clean(){
-	sudo apt-get update
-	sudo apt-get upgrade
-	sudo apt-get autoremove
+	sudo apt update
+	sudo apt upgrade
+	sudo apt autoremove
 }
 
-cd() { builtin cd "$@" && ls; }
+ritrdp(){
+	xfreerdp /rfx /d:main.ad.rit.edu /u:bsmeec /cert-ignore /v:$1
+}
+
+uploadToPyPi(){
+	python3 setup.py register -r https://pypi.python.org/pypi
+	python3 setup.py sdist upload
+}
 
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
@@ -140,8 +142,9 @@ if ! shopt -oq posix; then
   fi
 fi
 
-# added by Anaconda3 2.3.0 installer
-export PATH="/opt/anaconda3/bin:$PATH"
+# For every command that takes longer than five seconds to execute, create a pop-up notification upon completion.
+trap '_start=$SECONDS' DEBUG
+PROMPT_COMMAND='(if (( SECONDS - _start > 5 )); then hist1=$(echo $(history 1) | cut -d " " -f1); hist2=$(echo $(history 1) | cut -d " " -f2-); notify-send --icon=/usr/share/icons/Numix-Circle/48/apps/terminal-tango.svg "$(echo -e Finished!\\nPID: ${hist1}\\nCommand: ${hist2})"; fi)'
 
 #red="\033[1;31m";
 green="\e[1;32m";
@@ -149,8 +152,11 @@ norm="\033[0;39m";
 cyan="\033[1;36m";
 white="\e[1;37m";
 if [ "$PS1" ]; then
-#  PS1="\[$green\]\u\[$white\]@\[$cyan\]\h:\[$norm\]\w\$ "
+#PS1="\$ "
+   PS1="\[$green\]\u\[$white\]@\[$cyan\]\h:\[$norm\]\w\$ "
    PS1="\t \[$green\]\u\[$white\]@\[$cyan\]\H:\[$norm\]\w \\$\[$(tput sgr0)\] "
    #export PROMPT_COMMAND="echo -n \[\$(date +%H:%M:%S)\]\ "
    #export PS1=" "$PS1"\[\e]30;\u@\h\a\]"
 fi
+
+export PATH="$PATH:$HOME/.rvm/archives/rvm-1.27.0/scripts/bin" # Add RVM to PATH for scripting
