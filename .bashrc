@@ -4,13 +4,13 @@
 
 # If not running interactively, don't do anything
 case $- in
-    *i*) ;;
-      *) return;;
+  *i*) ;;
+    *) return;;
 esac
 
 # don't put duplicate lines or lines starting with space in the history.
 # See bash(1) for more options
-HISTCONTROL=ignoreboth
+HISTCONTROL=ignoreboth:erasedups
 
 # append to the history file, don't overwrite it
 shopt -s histappend
@@ -33,12 +33,12 @@ shopt -s checkwinsize
 # set variable identifying the chroot you work in (used in the prompt below)
 if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
 
-    debian_chroot=$(cat /etc/debian_chroot)
+  debian_chroot=$(cat /etc/debian_chroot)
 fi
 
 # set a fancy prompt (non-color, unless we know we "want" color)
 case "$TERM" in
-    xterm-color) color_prompt=yes;;
+  xterm-color) color_prompt=yes;;
 esac
 
 # uncomment for a colored prompt, if the terminal has the capability; turned
@@ -47,42 +47,42 @@ esac
 force_color_prompt=yes
 
 if [ -n "$force_color_prompt" ]; then
-    if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
-	# We have color support; assume it's compliant with Ecma-48
-	# (ISO/IEC-6429). (Lack of such support is extremely rare, and such
-	# a case would tend to support setf rather than setaf.)
-	color_prompt=yes
-    else
-	color_prompt=
-    fi
+  if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
+  # We have color support; assume it's compliant with Ecma-48
+  # (ISO/IEC-6429). (Lack of such support is extremely rare, and such
+  # a case would tend to support setf rather than setaf.)
+  color_prompt=yes
+  else
+  color_prompt=
+  fi
 fi
 
 if [ "$color_prompt" = yes ]; then
-    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+  PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
 else
-    PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
+  PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
 fi
 unset color_prompt force_color_prompt
 
 # If this is an xterm set the title to user@host:dir
 case "$TERM" in
 xterm*|rxvt*)
-    PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
-    ;;
+  PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
+  ;;
 *)
-    ;;
+  ;;
 esac
 
 # enable color support of ls and also add handy aliases
 if [ -x /usr/bin/dircolors ]; then
-    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
-    alias ls='ls --color=auto'
-    #alias dir='dir --color=auto'
-    #alias vdir='vdir --color=auto'
+  test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+  alias ls='ls --color=auto'
+  #alias dir='dir --color=auto'
+  #alias vdir='vdir --color=auto'
 
-    alias grep='grep --color=auto'
-    alias fgrep='fgrep --color=auto'
-    alias egrep='egrep --color=auto'
+  alias grep='grep --color=auto'
+  alias fgrep='fgrep --color=auto'
+  alias egrep='egrep --color=auto'
 fi
 
 # some more ls aliases
@@ -93,10 +93,18 @@ alias l='ls -CF'
 alias devsplat="~/Code/SPLAT/splat/splat"
 alias search="ls -R ${PWD} | grep"
 alias myip="hostname -I"
+alias fixaudio="ponymix -d 1 set-balance -- 0"
+alias fixlock="mate-screensaver & light-locker & disown"
+tmux-session() {
+  ~/.scripts/tmux-session $1
+}
+
+alias start-sonic-pi="qjackctl -s && sonic-pi"
+
 eval "$(thefuck --alias fuck)"
 
 fileToClipboard() {
-	cat $1 | xclip -selection clipboard
+  cat $1 | xclip -selection clipboard
 }
 
 cd() { builtin cd "$@" && ls; }
@@ -104,18 +112,27 @@ cd() { builtin cd "$@" && ls; }
 loop() { for i in $(seq $1); do $2; done }
 
 clean(){
-	sudo apt update
-	sudo apt upgrade
-	sudo apt autoremove
+  sudo apt update
+  sudo apt upgrade
+  sudo apt autoremove
 }
 
 ritrdp(){
-	xfreerdp /rfx /d:main.ad.rit.edu /u:bsmeec /cert-ignore /v:$1
+  xfreerdp /rfx /d:main.ad.rit.edu /u:bsmeec /cert-ignore /v:$1
 }
 
 uploadToPyPi(){
-	python3 setup.py register -r https://pypi.python.org/pypi
-	python3 setup.py sdist upload
+  python3 setup.py register -r https://pypi.python.org/pypi
+  python3 setup.py sdist upload
+}
+
+uploadToPyPiTest(){
+  python3 setup.py register -r https://testpypi.python.org/pypi
+  python3 setup.py sdist upload
+}
+
+wifi(){
+  sudo systemctl restart network-manager.service
 }
 
 # Add an "alert" alias for long running commands.  Use like so:
@@ -128,7 +145,7 @@ alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo
 # See /usr/share/doc/bash-doc/examples in the bash-doc package.
 
 if [ -f ~/.bash_aliases ]; then
-    . ~/.bash_aliases
+  . ~/.bash_aliases
 fi
 
 # enable programmable completion features (you don't need to enable
@@ -142,21 +159,32 @@ if ! shopt -oq posix; then
   fi
 fi
 
-# For every command that takes longer than five seconds to execute, create a pop-up notification upon completion.
-trap '_start=$SECONDS' DEBUG
-PROMPT_COMMAND='(if (( SECONDS - _start > 5 )); then hist1=$(echo $(history 1) | cut -d " " -f1); hist2=$(echo $(history 1) | cut -d " " -f2-); notify-send --icon=/usr/share/icons/Numix-Circle/48/apps/terminal-tango.svg "$(echo -e Finished!\\nPID: ${hist1}\\nCommand: ${hist2})"; fi)'
+function timer_start {
+  _start=$SECONDS
+}
 
-#red="\033[1;31m";
+function timer_stop {
+  _end=$((SECONDS-_start))
+}
+
+trap 'timer_start' DEBUG
+#PROMPT_COMMAND='(if (( SECONDS - _start > 5 )); then hist1=$(echo $(history 1) | cut -d " " -f1); hist2=$(echo $(history 1) | cut -d " " -f2-); notify-send --icon=/usr/share/icons/Numix-Circle/48/apps/terminal-tango.svg "Finished!" \ "PID:${hist1}" \ "Command:${hist2}"; fi)' #\ "Command:${hist[@]:1:3}"; fi)'
+PROMPT_COMMAND='(status=$(echo $?); if (( SECONDS - _start > 5 )); then hist1=$(echo $(history 1) | cut -d " " -f1); hist2=$(echo $(history 1) | cut -d " " -f2-); if (( status > 0 )); then icon=/usr/share/icons/Numix-Circle/48/apps/apport.svg; else icon=/usr/share/icons/Numix-Circle/48/apps/checkbox.svg; fi; timer_stop; notify-send --icon=${icon} "$(echo -e Exit Code: ${status}\\nPID:       ${hist1}\\nCommand:   ${hist2}\\nTime:      ${_end} sec)"; fi)'
+
+if [[ $VIRTUAL_ENV != "" ]]; then
+  venv="(${VIRTUAL_ENV##*/}) "
+else
+  venv=''
+fi
+
+red="\033[1;31m";
+greyblack="\e[48;5;250m\e[38;5;0m";
 green="\e[1;32m";
 norm="\033[0;39m";
 cyan="\033[1;36m";
-white="\e[1;37m";
+yellow="\e[38;5;226m";
 if [ "$PS1" ]; then
-#PS1="\$ "
-   PS1="\[$green\]\u\[$white\]@\[$cyan\]\h:\[$norm\]\w\$ "
-   PS1="\t \[$green\]\u\[$white\]@\[$cyan\]\H:\[$norm\]\w \\$\[$(tput sgr0)\] "
-   #export PROMPT_COMMAND="echo -n \[\$(date +%H:%M:%S)\]\ "
-   #export PS1=" "$PS1"\[\e]30;\u@\h\a\]"
+   PS1=$"\n\[$yellow\]🗲  \[$cyan\]\t \[$green\]\u\[$red\]@\h\[$yellow\] 🗲 \n\[$greyblack\]\[$venv\]\w "'\$'"\[$norm\]\[$(tput sgr0)\] "
 fi
 
 export PATH="$PATH:$HOME/.rvm/archives/rvm-1.27.0/scripts/bin" # Add RVM to PATH for scripting
